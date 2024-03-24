@@ -1,0 +1,66 @@
+#include <SFML/Graphics.hpp>
+
+int main()
+{
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Collision Detection");
+
+    // Create first rectangle shape for the character
+    sf::RectangleShape character(sf::Vector2f(50, 50));
+    character.setFillColor(sf::Color::Green);
+    character.setPosition(100, 100);
+
+    // Create second rectangle shape
+    sf::RectangleShape obstacle(sf::Vector2f(100, 100));
+    obstacle.setFillColor(sf::Color::Red);
+    obstacle.setPosition(300, 300);
+
+    // Define the movement speed
+    float movementSpeed = 0.01f;
+
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        // Move character with arrow keys only if there's no collision
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            if (!character.getGlobalBounds().intersects(obstacle.getGlobalBounds()) || character.getPosition().x > obstacle.getPosition().x + obstacle.getSize().x)
+                character.move(-movementSpeed, 0);
+            else
+                character.setPosition(obstacle.getPosition().x + obstacle.getSize().x, character.getPosition().y);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        {
+            if (!character.getGlobalBounds().intersects(obstacle.getGlobalBounds()) || character.getPosition().x + character.getSize().x < obstacle.getPosition().x)
+                character.move(movementSpeed, 0);
+            else
+                character.setPosition(obstacle.getPosition().x - character.getSize().x, character.getPosition().y);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            if (!character.getGlobalBounds().intersects(obstacle.getGlobalBounds()) || character.getPosition().y > obstacle.getPosition().y + obstacle.getSize().y)
+                character.move(0, -movementSpeed);
+            else
+                character.setPosition(character.getPosition().x, obstacle.getPosition().y + obstacle.getSize().y);
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            if (!character.getGlobalBounds().intersects(obstacle.getGlobalBounds()) || character.getPosition().y + character.getSize().y < obstacle.getPosition().y)
+                character.move(0, movementSpeed);
+            else
+                character.setPosition(character.getPosition().x, obstacle.getPosition().y - character.getSize().y);
+        }
+
+        window.clear();
+        window.draw(character);
+        window.draw(obstacle);
+        window.display();
+    }
+
+    return 0;
+}
